@@ -1,0 +1,32 @@
+node_modules
+.env
+coverage
+coverage.json
+typechain-types
+yarn-error.log
+
+#Hardhat files
+artifacts/
+artifacts-ref/
+hh-cache/
+hh-cache-coverage/
+hh-cache-ref/
+temp-src-coverage/
+
+#foundry test compilation files
+cache
+out
+reference-out
+optimized-out
+reference-working
+broadcast
+
+.DS_Store
+
+# VScode
+.vscode
+__pycache__
+
+# use typescript instead of javascript
+*.js
+*.txt
