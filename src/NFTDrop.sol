@@ -5,7 +5,7 @@ import { IDrop } from "./interfaces/IDrop.sol";
 
 import { INFT } from "./interfaces/INFT.sol";
 import { NFTMetadata, IMetadata } from "./NFTMetadata.sol";
-import { AllowListData, PublicDrop, TokenGatedDropStage, SignedMintValidationParams } from "./lib/SeaDropStructs.sol";
+import { AllowListData, PublicDrop, TokenGatedDropStage, SignedMintValidationParams } from "./lib/DropStructs.sol";
 
 import { ERC721A } from "ERC721A/ERC721A.sol";
 import { ReentrancyGuard } from "solmate/utils/ReentrancyGuard.sol";
@@ -13,97 +13,97 @@ import { IERC165 } from "openzeppelin-contracts/contracts/utils/introspection/IE
 
 /**
  * @title  NFTDrop
- * @notice NFTDrop 是一个 代币合约, 其中包含与 SeaDrop 正确交互的方法
+ * @notice NFTDrop 是一个 代币合约, 其中包含与 Drop 正确交互的方法
  */
 contract NFTDrop is NFTMetadata, INFT, ReentrancyGuard {
 
     /// @notice 如果 mint 超过最大供应量，则返回错误。
     error MintQuantityExceedsMaxSupply(uint256 total, uint256 maxSupply);
 
-    /// @notice 跟踪允许的 SeaDrop 地址
-    mapping(address => bool) internal _allowedSeaDrop;
+    /// @notice 跟踪允许的 Drop 地址
+    mapping(address => bool) internal _allowedDrop;
 
-    /// @notice 跟踪枚举的允许的 SeaDrop 地址。
-    address[] internal _enumeratedAllowedSeaDrop;
+    /// @notice 跟踪枚举的允许的 Drop 地址。
+    address[] internal _enumeratedAllowedDrop;
 
     /**
-     * @notice 限定访问权限的修饰符, 允许的 SeaDrop 合约
+     * @notice 限定访问权限的修饰符, 允许的 Drop 合约
      */
-    modifier onlyAllowedSeaDrop(address seaDrop) {
-        if (_allowedSeaDrop[seaDrop] != true) {
-            revert OnlyAllowedSeaDrop();
+    modifier onlyAllowedDrop(address Drop) {
+        if (_allowedDrop[Drop] != true) {
+            revert OnlyAllowedDrop();
         }
         _;
     }
 
     /**
      * @notice Deploy the token contract with its name, symbol,
-     *         and allowed SeaDrop addresses.
+     *         and allowed Drop addresses.
      */
-    constructor(string memory name, string memory symbol, address[] memory allowedSeaDrop) 
+    constructor(string memory name, string memory symbol, address[] memory allowedDrop) 
         NFTMetadata(name, symbol) 
     {
         // Put the length on the stack for more efficient access.
-        uint256 allowedSeaDropLength = allowedSeaDrop.length;
+        uint256 allowedDropLength = allowedDrop.length;
 
-        // Set the mapping for allowed SeaDrop contracts.
-        for (uint256 i = 0; i < allowedSeaDropLength; ) {
-            _allowedSeaDrop[allowedSeaDrop[i]] = true;
+        // Set the mapping for allowed Drop contracts.
+        for (uint256 i = 0; i < allowedDropLength; ) {
+            _allowedDrop[allowedDrop[i]] = true;
             unchecked {
                 ++i;
             }
         }
 
         // Set the enumeration.
-        _enumeratedAllowedSeaDrop = allowedSeaDrop;
+        _enumeratedAllowedDrop = allowedDrop;
     }
 
     /**
-     * @notice Update the allowed SeaDrop contracts.
+     * @notice Update the allowed Drop contracts.
      *         Only the owner or administrator can use this function.
      *
-     * @param allowedSeaDrop The allowed SeaDrop addresses.
+     * @param allowedDrop The allowed Drop addresses.
      */
-    function updateAllowedSeaDrop(address[] calldata allowedSeaDrop)
+    function updateAllowedDrop(address[] calldata allowedDrop)
         external
         virtual
         override
         onlyOwner
     {
-        _updateAllowedSeaDrop(allowedSeaDrop);
+        _updateAllowedDrop(allowedDrop);
     }
 
     /**
-     * @notice Internal function to update the allowed SeaDrop contracts.
+     * @notice Internal function to update the allowed Drop contracts.
      *
-     * @param allowedSeaDrop The allowed SeaDrop addresses.
+     * @param allowedDrop The allowed Drop addresses.
      */
-    function _updateAllowedSeaDrop(address[] calldata allowedSeaDrop) internal {
+    function _updateAllowedDrop(address[] calldata allowedDrop) internal {
         // Put the length on the stack for more efficient access.
-        uint256 enumeratedAllowedSeaDropLength = _enumeratedAllowedSeaDrop.length;
-        uint256 allowedSeaDropLength = allowedSeaDrop.length;
+        uint256 enumeratedAllowedDropLength = _enumeratedAllowedDrop.length;
+        uint256 allowedDropLength = allowedDrop.length;
 
         // Reset the old mapping.
-        for (uint256 i = 0; i < enumeratedAllowedSeaDropLength; ) {
-            _allowedSeaDrop[_enumeratedAllowedSeaDrop[i]] = false;
+        for (uint256 i = 0; i < enumeratedAllowedDropLength; ) {
+            _allowedDrop[_enumeratedAllowedDrop[i]] = false;
             unchecked {
                 ++i;
             }
         }
 
-        // Set the new mapping for allowed SeaDrop contracts.
-        for (uint256 i = 0; i < allowedSeaDropLength; ) {
-            _allowedSeaDrop[allowedSeaDrop[i]] = true;
+        // Set the new mapping for allowed Drop contracts.
+        for (uint256 i = 0; i < allowedDropLength; ) {
+            _allowedDrop[allowedDrop[i]] = true;
             unchecked {
                 ++i;
             }
         }
 
         // Set the enumeration.
-        _enumeratedAllowedSeaDrop = allowedSeaDrop;
+        _enumeratedAllowedDrop = allowedDrop;
 
         // Emit an event for the update.
-        emit AllowedSeaDropUpdated(allowedSeaDrop);
+        emit AllowedDropUpdated(allowedDrop);
     }
 
     /**
@@ -118,18 +118,18 @@ contract NFTDrop is NFTMetadata, INFT, ReentrancyGuard {
     }
 
     /**
-     * @notice Mint tokens, restricted to the SeaDrop contract.
+     * @notice Mint tokens, restricted to the Drop contract.
      *
-     * @dev    NOTE: If a token registers itself with multiple SeaDrop
+     * @dev    NOTE: If a token registers itself with multiple Drop
      *         contracts, the implementation of this function should guard
      *         against reentrancy. If the implementing token uses
      *         _safeMint(), or a feeRecipient with a malicious receive() hook
      *         is specified, the token or fee recipients may be able to execute
-     *         another mint in the same transaction via a separate SeaDrop
+     *         another mint in the same transaction via a separate Drop
      *         contract.
      *         This is dangerous if an implementing token does not correctly
      *         update the minterNumMinted and currentTotalSupply values before
-     *         transferring minted tokens, as SeaDrop references these values
+     *         transferring minted tokens, as Drop references these values
      *         to enforce token limits on a per-wallet and per-stage basis.
      *
      *         ERC721A tracks these values automatically, but this note and
@@ -139,12 +139,12 @@ contract NFTDrop is NFTMetadata, INFT, ReentrancyGuard {
      * @param minter   The address to mint to.
      * @param quantity The number of tokens to mint.
      */
-    function mintSeaDrop(address minter, uint256 quantity)
+    function mintDrop(address minter, uint256 quantity)
         external
         payable
         virtual
         override
-        onlyAllowedSeaDrop(msg.sender)
+        onlyAllowedDrop(msg.sender)
         nonReentrant
     {
         // Extra safety check to ensure the max supply is not exceeded.
@@ -161,96 +161,96 @@ contract NFTDrop is NFTMetadata, INFT, ReentrancyGuard {
 
   
     /**
-     * @notice Update the drop URI for this nft contract on SeaDrop.
+     * @notice Update the drop URI for this nft contract on Drop.
      *         Only the owner can use this function.
      *
-     * @param seaDropImpl The allowed SeaDrop contract.
+     * @param DropImpl The allowed Drop contract.
      * @param dropURI     The new drop URI.
      */
-    function updateDropURI(address seaDropImpl, string calldata dropURI)
+    function updateDropURI(address DropImpl, string calldata dropURI)
         external
         virtual
         override
         onlyOwner
-        onlyAllowedSeaDrop(seaDropImpl)
+        onlyAllowedDrop(DropImpl)
     {
         // Update the drop URI.
-        IDrop(seaDropImpl).updateDropURI(dropURI);
+        IDrop(DropImpl).updateDropURI(dropURI);
     }
 
     /**
-     * @notice Update the creator payout address for this nft contract on SeaDrop.
-     *         Only the owner can set the creator payout address.
+     * @notice Update the creator payout address for this nft contract on Drop.         // 更新收款地址
+     *         Only the owner can set the creator payout address.                       // 只有合约拥有者可以设置收款地址
      *
-     * @param seaDropImpl   The allowed SeaDrop contract.
-     * @param payoutAddress The new payout address.
+     * @param DropImpl   The allowed Drop contract.                                     // Drop 合约
+     * @param payoutAddress The new payout address.                                     // 收款地址
      */
-    function updateCreatorPayoutAddress(address seaDropImpl, address payoutAddress) 
+    function updateCreatorPayoutAddress(address DropImpl, address payoutAddress) 
         external 
         onlyOwner 
-        onlyAllowedSeaDrop(seaDropImpl) 
+        onlyAllowedDrop(DropImpl) 
     {
         // Update the creator payout address.
-        IDrop(seaDropImpl).updateCreatorPayoutAddress(payoutAddress);
+        IDrop(DropImpl).updateCreatorPayoutAddress(payoutAddress);
     }
 
     /**
      * @notice Update the allowed fee recipient for this nft contract
-     *         on SeaDrop.
+     *         on Drop.
      *         Only the owner can set the allowed fee recipient.
      *
-     * @param seaDropImpl  The allowed SeaDrop contract.
+     * @param DropImpl  The allowed Drop contract.
      * @param feeRecipient The new fee recipient.
      * @param allowed      If the fee recipient is allowed.
      */
     function updateAllowedFeeRecipient(
-        address seaDropImpl,
+        address DropImpl,
         address feeRecipient,
         bool allowed
-    ) external virtual onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
+    ) external virtual onlyOwner onlyAllowedDrop(DropImpl) {
         // Update the allowed fee recipient.
-        IDrop(seaDropImpl).updateAllowedFeeRecipient(feeRecipient, allowed);
+        IDrop(DropImpl).updateAllowedFeeRecipient(feeRecipient, allowed);
     }
 
     /**
      * @notice Update the server-side signers for this nft contract
-     *         on SeaDrop.
+     *         on Drop.
      *         Only the owner can use this function.
      *
-     * @param seaDropImpl                The allowed SeaDrop contract.
+     * @param DropImpl                The allowed Drop contract.
      * @param signer                     The signer to update.
      * @param signedMintValidationParams Minimum and maximum parameters to
      *                                   enforce for signed mints.
      */
     function updateSignedMintValidationParams(
-        address seaDropImpl,
+        address DropImpl,
         address signer,
         SignedMintValidationParams memory signedMintValidationParams
-    ) external virtual override onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
+    ) external virtual override onlyOwner onlyAllowedDrop(DropImpl) {
         // Update the signer.
-        IDrop(seaDropImpl).updateSignedMintValidationParams(signer, signedMintValidationParams);
+        IDrop(DropImpl).updateSignedMintValidationParams(signer, signedMintValidationParams);
     }
 
     /**
-     * @notice Update the allowed payers for this nft contract on SeaDrop.
+     * @notice Update the allowed payers for this nft contract on Drop.
      *         Only the owner can use this function.
      *
-     * @param seaDropImpl The allowed SeaDrop contract.
+     * @param DropImpl The allowed Drop contract.
      * @param payer       The payer to update.
      * @param allowed     Whether the payer is allowed.
      */
     function updatePayer(
-        address seaDropImpl,
+        address DropImpl,
         address payer,
         bool allowed
-    ) external virtual override onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
+    ) external virtual override onlyOwner onlyAllowedDrop(DropImpl) {
         // Update the signers.
-        IDrop(seaDropImpl).updatePayer(payer, allowed);
+        IDrop(DropImpl).updatePayer(payer, allowed);
     }
 
     /**
      * @notice Returns a set of mint stats for the address.
-     *         This assists SeaDrop in enforcing maxSupply,
+     *         This assists Drop in enforcing maxSupply,
      *         maxTotalMintableByWallet, and maxTokenSupplyForStage checks.
      *
      * @dev    NOTE: Implementing contracts should always update these numbers

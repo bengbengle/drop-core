@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import { PublicDrop, TokenGatedDropStage, SignedMintValidationParams } from "./SeaDropStructs.sol";
+import { PublicDrop, TokenGatedDropStage, SignedMintValidationParams } from "./DropStructs.sol";
 
 interface DropErrorsAndEvents {
 
@@ -66,7 +66,7 @@ interface DropErrorsAndEvents {
 
     error SignatureAlreadyUsed();
 
-    event SeaDropMint(
+    event DropMint(
         address indexed nftContract,
         address indexed minter,
         address indexed feeRecipient,

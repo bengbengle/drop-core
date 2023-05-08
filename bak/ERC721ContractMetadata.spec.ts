@@ -5,12 +5,12 @@ import { randomHex } from "../test/utils/encoding";
 import { faucet } from "../test/utils/faucet";
 import { VERSION } from "../test/utils/helpers";
 
-import type { ERC721PartnerSeaDrop } from "../typechain-types";
+import type { NFT } from "../typechain-types";
 import type { Wallet } from "ethers";
 
 describe(`NFTMetadata (v${VERSION})`, function () {
   const { provider } = ethers;
-  let token: ERC721PartnerSeaDrop;
+  let token: NFT;
   let owner: Wallet;
   let admin: Wallet;
 
@@ -31,11 +31,11 @@ describe(`NFTMetadata (v${VERSION})`, function () {
     }
 
     // Deploy token
-    const ERC721PartnerSeaDrop = await ethers.getContractFactory(
-      "ERC721PartnerSeaDrop",
+    const NFT = await ethers.getContractFactory(
+      "NFT",
       owner
     );
-    token = await ERC721PartnerSeaDrop.deploy("", "", admin.address, []);
+    token = await NFT.deploy("", "", admin.address, []);
   });
 
   it("Should only let the owner set and get the base URI", async () => {

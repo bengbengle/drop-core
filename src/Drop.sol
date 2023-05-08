@@ -10,10 +10,7 @@ import { IERC721 } from "openzeppelin-contracts/contracts/token/ERC721/IERC721.s
 import { IERC165 } from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 import { ECDSA } from "openzeppelin-contracts/contracts/utils/cryptography/ECDSA.sol";
 
-import {
-    MintParams,
-    SignedMintValidationParams
-} from "./lib/SeaDropStructs.sol";
+import { MintParams, SignedMintValidationParams } from "./lib/DropStructs.sol";
 
 
 contract Drop is IDrop, ReentrancyGuard {
@@ -97,7 +94,7 @@ contract Drop is IDrop, ReentrancyGuard {
                 "address verifyingContract"
             ")"
         );
-    bytes32 internal constant _NAME_HASH = keccak256("SeaDrop");
+    bytes32 internal constant _NAME_HASH = keccak256("Drop");
     bytes32 internal constant _VERSION_HASH = keccak256("1.0");
     uint256 internal immutable _CHAIN_ID = block.chainid;
     bytes32 internal immutable _DOMAIN_SEPARATOR;
@@ -451,7 +448,7 @@ contract Drop is IDrop, ReentrancyGuard {
         address feeRecipient
     ) internal nonReentrant {
         // Mint the token(s).
-        INFT(nftContract).mintSeaDrop(minter, quantity);
+        INFT(nftContract).mintDrop(minter, quantity);
 
         if (mintPrice != 0) {
             // Split the payment between the creator and fee recipient.
@@ -459,7 +456,7 @@ contract Drop is IDrop, ReentrancyGuard {
         }
 
         // Emit an event for the mint.
-        emit SeaDropMint(
+        emit DropMint(
             nftContract,
             minter,
             feeRecipient,

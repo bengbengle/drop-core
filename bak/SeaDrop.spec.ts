@@ -6,13 +6,13 @@ import { faucet } from "../test/utils/faucet";
 import { VERSION } from "../test/utils/helpers";
 import { whileImpersonating } from "../test/utils/impersonate";
 
-import type { ERC721PartnerSeaDrop, IERC721, IDrop } from "../typechain-types";
+import type { NFT, IERC721, IDrop } from "../typechain-types";
 import type { Wallet } from "ethers";
 
-describe(`SeaDrop (v${VERSION})`, function () {
+describe(`Drop (v${VERSION})`, function () {
   const { provider } = ethers;
-  let seadrop: IDrop;
-  let token: ERC721PartnerSeaDrop;
+  let Drop: IDrop;
+  let token: NFT;
   let standard721Token: IERC721;
   let owner: Wallet;
   let admin: Wallet;
@@ -35,23 +35,23 @@ describe(`SeaDrop (v${VERSION})`, function () {
       await faucet(wallet.address, provider);
     }
 
-    // Deploy SeaDrop
-    const SeaDrop = await ethers.getContractFactory("SeaDrop", owner);
-    seadrop = await SeaDrop.deploy();
+    // Deploy Drop
+    const Drop = await ethers.getContractFactory("Drop", owner);
+    Drop = await Drop.deploy();
 
     // Deploy token
-    const ERC721PartnerSeaDrop = await ethers.getContractFactory(
-      "ERC721PartnerSeaDrop",
+    const NFT = await ethers.getContractFactory(
+      "NFT",
       owner
     );
-    token = await ERC721PartnerSeaDrop.deploy("", "", admin.address, [seadrop.address]);
+    token = await NFT.deploy("", "", admin.address, [Drop.address]);
 
-    // Deploy a standard (non-IER721SeaDrop) token
+    // Deploy a standard (non-IER721Drop) token
     const ERC721A = await ethers.getContractFactory("ERC721A", owner);
     standard721Token = (await ERC721A.deploy("", "")) as unknown as IERC721;
   });
 
-  it("Should not let a non-INonFungibleSeaDropToken token contract use the token methods", async () => {
+  it("Should not let a non-INFT token contract use the token methods", async () => {
     await whileImpersonating(
       standard721Token.address,
       provider,
@@ -65,8 +65,8 @@ describe(`SeaDrop (v${VERSION})`, function () {
           restrictFeeRecipients: false,
         };
         await expect(
-          seadrop.connect(impersonatedSigner).updatePublicDrop(publicDrop)
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+          Drop.connect(impersonatedSigner).updatePublicDrop(publicDrop)
+        ).to.be.revertedWith("OnlyINFT");
 
         const allowListData = {
           merkleRoot: ethers.constants.HashZero,
@@ -74,8 +74,8 @@ describe(`SeaDrop (v${VERSION})`, function () {
           allowListURI: "",
         };
         await expect(
-          seadrop.connect(impersonatedSigner).updateAllowList(allowListData)
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+          Drop.connect(impersonatedSigner).updateAllowList(allowListData)
+        ).to.be.revertedWith("OnlyINFT");
 
         const tokenGatedDropStage = {
           mintPrice: "10000000000000000", // 0.01 ether
@@ -88,22 +88,22 @@ describe(`SeaDrop (v${VERSION})`, function () {
           restrictFeeRecipients: true,
         };
         await expect(
-          seadrop
+          Drop
             .connect(impersonatedSigner)
             .updateTokenGatedDrop(minter.address, tokenGatedDropStage)
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+        ).to.be.revertedWith("OnlyINFT");
 
         await expect(
-          seadrop
+          Drop
             .connect(impersonatedSigner)
             .updateCreatorPayoutAddress(minter.address)
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+        ).to.be.revertedWith("OnlyINFT");
 
         await expect(
-          seadrop
+          Drop
             .connect(impersonatedSigner)
             .updateAllowedFeeRecipient(minter.address, true)
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+        ).to.be.revertedWith("OnlyINFT");
 
         const signedMintValidationParams = {
           minMintPrice: 1,
@@ -115,28 +115,28 @@ describe(`SeaDrop (v${VERSION})`, function () {
           maxFeeBps: 9000,
         };
         await expect(
-          seadrop
+          Drop
             .connect(impersonatedSigner)
             .updateSignedMintValidationParams(
               minter.address,
               signedMintValidationParams
             )
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+        ).to.be.revertedWith("OnlyINFT");
 
         await expect(
-          seadrop.connect(impersonatedSigner).updateDropURI("http://test.com")
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+          Drop.connect(impersonatedSigner).updateDropURI("http://test.com")
+        ).to.be.revertedWith("OnlyINFT");
 
         await expect(
-          seadrop.connect(impersonatedSigner).updatePayer(minter.address, true)
-        ).to.be.revertedWith("OnlyINonFungibleSeaDropToken");
+          Drop.connect(impersonatedSigner).updatePayer(minter.address, true)
+        ).to.be.revertedWith("OnlyINFT");
       }
     );
 
     await expect(
-      token.connect(owner).updateDropURI(seadrop.address, "http://test.com")
+      token.connect(owner).updateDropURI(Drop.address, "http://test.com")
     )
-      .to.emit(seadrop, "DropURIUpdated")
+      .to.emit(Drop, "DropURIUpdated")
       .withArgs(token.address, "http://test.com");
   });
 
@@ -157,7 +157,7 @@ describe(`SeaDrop (v${VERSION})`, function () {
       token.address,
       provider,
       async (impersonatedSigner) => {
-        await seadrop.connect(impersonatedSigner).updatePublicDrop(publicDrop);
+        await Drop.connect(impersonatedSigner).updatePublicDrop(publicDrop);
       }
     );
 
@@ -167,11 +167,11 @@ describe(`SeaDrop (v${VERSION})`, function () {
     // Set the creator address to MaliciousRecipient.
     await token
       .connect(owner)
-      .updateCreatorPayoutAddress(seadrop.address, maliciousRecipient.address);
+      .updateCreatorPayoutAddress(Drop.address, maliciousRecipient.address);
 
     // Should not be able to mint with reentrancy.
     await maliciousRecipient.setStartAttack({ value: oneEther.mul(10) });
-    await expect(maliciousRecipient.attack(seadrop.address, token.address)).to.be.revertedWith("ETH_TRANSFER_FAILED");
+    await expect(maliciousRecipient.attack(Drop.address, token.address)).to.be.revertedWith("ETH_TRANSFER_FAILED");
     expect(await token.totalSupply()).to.eq(0);
   });
 });

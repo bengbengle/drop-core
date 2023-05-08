@@ -1,12 +1,12 @@
 # Deployment
 
-## SeaDrop deployment
+## Drop deployment
 
 For official deployments see [Deployments](../README.md#deployments).
 
-If you would like to deploy your own `SeaDrop` instance, you can do so with:
+If you would like to deploy your own `Drop` instance, you can do so with:
 
-`forge create --rpc-url [rpc_url] src/SeaDrop.sol:SeaDrop --private-key [priv_key] --etherscan-api-key [api_key] --verify`
+`forge create --rpc-url [rpc_url] src/Drop.sol:Drop --private-key [priv_key] --etherscan-api-key [api_key] --verify`
 
 To deploy at the cross-chain address of `0x00005EA00Ac477B1030CE78506496e8C2dE24bf5`, send:
 
@@ -16,14 +16,14 @@ seth send 0x0000000000ffe8b47b3e2130213b802212439497 0x64e0308700000000000000000
 
 ## Token deployment checklist
 
-### ERC721SeaDrop
+### NFTDrop
 
-`ERC721SeaDrop` contains only an Owner role (assigned to the deployer of the contract) that has authorization for all methods.
+`NFTDrop` contains only an Owner role (assigned to the deployer of the contract) that has authorization for all methods.
 
-To split responsibilities with an Administrator role who can set fee parameters, use [`ERC721PartnerSeaDrop`](#erc721partnerseadrop).
+To split responsibilities with an Administrator role who can set fee parameters, use [`NFT`](#NFT).
 
-1. Deploy `src/ERC721SeaDrop.sol` with constructor args `string name, string symbol, address[] allowedSeaDrop`
-   1. e.g. `forge create --rpc-url [rpc_url] src/ERC721SeaDrop.sol:ERC721SeaDrop --constructor-args "TokenTest1" "TEST1" \[seadrop_address\] --private-key [priv_key] --etherscan-api-key [api_key] --verify`
+1. Deploy `src/ERC721Drop.sol` with constructor args `string name, string symbol, address[] allowedDrop`
+   1. e.g. `forge create --rpc-url [rpc_url] src/ERC721Drop.sol:NFTDrop --constructor-args "TokenTest1" "TEST1" \[Drop_address\] --private-key [priv_key] --etherscan-api-key [api_key] --verify`
 1. Set the token max supply with `token.setMaxSupply()`
 1. Set the creator payout address with `token.updateCreatorPayoutAddress()`
 1. Set the contract URI with `token.setContractURI()`
@@ -38,12 +38,12 @@ To split responsibilities with an Administrator role who can set fee parameters,
    1. Add server-side signers with `token.updateSignedMintValidationParams()`
 1. Set a public drop stage with `token.updatePublicDrop()`
 
-### ERC721PartnerSeaDrop
+### NFT
 
-`ERC721PartnerSeaDrop` is a token contract designed to split responsibilities between an Owner and Administrator.
+`NFT` is a token contract designed to split responsibilities between an Owner and Administrator.
 
-1. Deploy `src/ERC721PartnerSeaDrop.sol` with constructor args `string name, string symbol, address administrator, address[] allowedSeaDrop`
-   1. e.g. `forge create --rpc-url [rpc_url] src/ERC721PartnerSeaDrop.sol:ERC721PartnerSeaDrop --constructor-args "TokenTest1" "TEST1" [administrator_address] \[seadrop_address\] --private-key [priv_key] --etherscan-api-key [api_key] --verify`
+1. Deploy `src/NFT.sol` with constructor args `string name, string symbol, address administrator, address[] allowedDrop`
+   1. e.g. `forge create --rpc-url [rpc_url] src/NFT.sol:NFT --constructor-args "TokenTest1" "TEST1" [administrator_address] \[Drop_address\] --private-key [priv_key] --etherscan-api-key [api_key] --verify`
 1. Required to be sent by token Owner:
    1. Set the token max supply with `token.setMaxSupply()`
    1. Set the creator payout address with `token.updateCreatorPayoutAddress()`

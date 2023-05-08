@@ -5,7 +5,7 @@ import {IMetadata} from "../interfaces/IMetadata.sol";
 
 import {
     SignedMintValidationParams
-} from "../lib/SeaDropStructs.sol";
+} from "../lib/DropStructs.sol";
 
 import {
     IERC165
@@ -14,46 +14,46 @@ import {
 interface INFT is IMetadata, IERC165 {
     /**
      * @dev Revert with an error if a contract is not an allowed
-     *      SeaDrop address.
+     *      Drop address.
      */
-    error OnlyAllowedSeaDrop();
+    error OnlyAllowedDrop();
 
     /**
-     * @dev Emit an event when allowed SeaDrop contracts are updated.
+     * @dev Emit an event when allowed Drop contracts are updated.
      */
-    event AllowedSeaDropUpdated(address[] allowedSeaDrop);
+    event AllowedDropUpdated(address[] allowedDrop);
 
     /**
-     * @notice Update the allowed SeaDrop contracts.
+     * @notice Update the allowed Drop contracts.
      *         Only the owner or administrator can use this function.
      *
-     * @param allowedSeaDrop The allowed SeaDrop addresses.
+     * @param allowedDrop The allowed Drop addresses.
      */
-    function updateAllowedSeaDrop(address[] calldata allowedSeaDrop) external;
+    function updateAllowedDrop(address[] calldata allowedDrop) external;
 
     /**
-     * @notice Mint tokens, restricted to the SeaDrop contract.
+     * @notice Mint tokens, restricted to the Drop contract.
      *
-     * @dev    NOTE: If a token registers itself with multiple SeaDrop
+     * @dev    NOTE: If a token registers itself with multiple Drop
      *         contracts, the implementation of this function should guard
      *         against reentrancy. If the implementing token uses
      *         _safeMint(), or a feeRecipient with a malicious receive() hook
      *         is specified, the token or fee recipients may be able to execute
-     *         another mint in the same transaction via a separate SeaDrop
+     *         another mint in the same transaction via a separate Drop
      *         contract.
      *         This is dangerous if an implementing token does not correctly
      *         update the minterNumMinted and currentTotalSupply values before
-     *         transferring minted tokens, as SeaDrop references these values
+     *         transferring minted tokens, as Drop references these values
      *         to enforce token limits on a per-wallet and per-stage basis.
      *
      * @param minter   The address to mint to.
      * @param quantity The number of tokens to mint.
      */
-    function mintSeaDrop(address minter, uint256 quantity) external payable;
+    function mintDrop(address minter, uint256 quantity) external payable;
 
     /**
      * @notice Returns a set of mint stats for the address.
-     *         This assists SeaDrop in enforcing maxSupply,
+     *         This assists Drop in enforcing maxSupply,
      *         maxTotalMintableByWallet, and maxTokenSupplyForStage checks.
      *
      * @dev    NOTE: Implementing contracts should always update these numbers
@@ -73,66 +73,66 @@ interface INFT is IMetadata, IERC165 {
 
 
     /**
-     * @notice Update the drop URI for this nft contract on SeaDrop.
+     * @notice Update the drop URI for this nft contract on Drop.
      *         Only the owner or administrator can use this function.
      *
-     * @param seaDropImpl The allowed SeaDrop contract.
+     * @param DropImpl The allowed Drop contract.
      * @param dropURI     The new drop URI.
      */
-    function updateDropURI(address seaDropImpl, string calldata dropURI) external;
+    function updateDropURI(address DropImpl, string calldata dropURI) external;
 
     /**
-     * @notice Update the creator payout address for this nft contract on SeaDrop.
+     * @notice Update the creator payout address for this nft contract on Drop.
      *         Only the owner can set the creator payout address.
      *
-     * @param seaDropImpl   The allowed SeaDrop contract.
+     * @param DropImpl   The allowed Drop contract.
      * @param payoutAddress The new payout address.
      */
     function updateCreatorPayoutAddress(
-        address seaDropImpl,
+        address DropImpl,
         address payoutAddress
     ) external;
 
     /**
      * @notice Update the allowed fee recipient for this nft contract
-     *         on SeaDrop.
+     *         on Drop.
      *         Only the administrator can set the allowed fee recipient.
      *
-     * @param seaDropImpl  The allowed SeaDrop contract.
+     * @param DropImpl  The allowed Drop contract.
      * @param feeRecipient The new fee recipient.
      */
     function updateAllowedFeeRecipient(
-        address seaDropImpl,
+        address DropImpl,
         address feeRecipient,
         bool allowed
     ) external;
 
     /**
      * @notice Update the server-side signers for this nft contract
-     *         on SeaDrop.
+     *         on Drop.
      *         Only the owner or administrator can use this function.
      *
-     * @param seaDropImpl                The allowed SeaDrop contract.
+     * @param DropImpl                The allowed Drop contract.
      * @param signer                     The signer to update.
      * @param signedMintValidationParams Minimum and maximum parameters
      *                                   to enforce for signed mints.
      */
     function updateSignedMintValidationParams(
-        address seaDropImpl,
+        address DropImpl,
         address signer,
         SignedMintValidationParams memory signedMintValidationParams
     ) external;
 
     /**
-     * @notice Update the allowed payers for this nft contract on SeaDrop.
+     * @notice Update the allowed payers for this nft contract on Drop.
      *         Only the owner or administrator can use this function.
      *
-     * @param seaDropImpl The allowed SeaDrop contract.
+     * @param DropImpl The allowed Drop contract.
      * @param payer       The payer to update.
      * @param allowed     Whether the payer is allowed.
      */
     function updatePayer(
-        address seaDropImpl,
+        address DropImpl,
         address payer,
         bool allowed
     ) external;

@@ -12,7 +12,7 @@ import type { SignedMintValidationParamsStruct } from "../typechain-types/src/NF
 import type { MintParamsStruct } from "../typechain-types/src/Drop";
 import type { Wallet } from "ethers";
 
-describe(`SeaDrop - Mint Signed (v${VERSION})`, function () {
+describe(`Drop - Mint Signed (v${VERSION})`, function () {
   const { provider } = ethers;
   let drop: IDrop;
   let nft: NFT;
@@ -44,13 +44,13 @@ describe(`SeaDrop - Mint Signed (v${VERSION})`, function () {
       await faucet(wallet.address, provider);
     }
 
-    // Deploy SeaDrop
-    const SeaDrop = await ethers.getContractFactory("Drop", admin);
-    drop = await SeaDrop.deploy();
+    // Deploy Drop
+    const Drop = await ethers.getContractFactory("Drop", admin);
+    drop = await Drop.deploy();
 
     // Configure EIP-712 params
     eip712Domain = {
-      name: "SeaDrop",
+      name: "Drop",
       version: "1.0",
       chainId: (await provider.getNetwork()).chainId,
       verifyingContract: drop.address,
@@ -177,7 +177,7 @@ describe(`SeaDrop - Mint Signed (v${VERSION})`, function () {
           {value}
         )
         
-    ).to.emit(drop, "SeaDropMint")
+    ).to.emit(drop, "DropMint")
       
 
     let minterBalance = await nft.balanceOf(minter.address);

@@ -3,15 +3,15 @@ pragma solidity ^0.8.17;
 
 import "forge-std/Script.sol";
 
-import { ERC721SeaDrop } from "../src/ERC721SeaDrop.sol";
+import { NFTDrop } from "../src/NFTDrop.sol";
 
 import { IDrop } from "../src/interfaces/IDrop.sol";
 
-import { PublicDrop } from "../src/lib/SeaDropStructs.sol";
+import { PublicDrop } from "../src/lib/DropStructs.sol";
 
 contract DeployAndConfigureExampleToken is Script {
     // Addresses
-    address seadrop = 0x00005EA00Ac477B1030CE78506496e8C2dE24bf5;
+    address Drop = 0x00005EA00Ac477B1030CE78506496e8C2dE24bf5;
     address creator = 0x26faf8AE18d15Ed1CA0563727Ad6D4Aa02fb2F80;
     address feeRecipient = 0x0000a26b00c1F0DF003000390027140000fAa719;
 
@@ -26,41 +26,37 @@ contract DeployAndConfigureExampleToken is Script {
     function run() external {
         vm.startBroadcast();
 
-        address[] memory allowedSeadrop = new address[](1);
-        allowedSeadrop[0] = seadrop;
+        address[] memory allowedDrop = new address[](1);
+        allowedDrop[0] = Drop;
 
-        // This example uses ERC721SeaDrop. For separate Owner and
-        // Administrator privileges, use ERC721PartnerSeaDrop.
-        ERC721SeaDrop token = new ERC721SeaDrop(
-            "My Example Token",
-            "ExTKN",
-            allowedSeadrop
-        );
+        // This example uses NFTDrop. For separate Owner and
+        // Administrator privileges, use NFT.
+        NFTDrop token = new NFTDrop("My Example Token", "ExTKN", allowedDrop);
 
         // Configure the token.
         token.setMaxSupply(maxSupply);
 
         // Configure the drop parameters.
-        token.updateCreatorPayoutAddress(seadrop, creator);
-        token.updateAllowedFeeRecipient(seadrop, feeRecipient, true);
-        token.updatePublicDrop(
-            seadrop,
-            PublicDrop(
-                mintPrice,
-                uint48(block.timestamp), // start time
-                uint48(block.timestamp) + 1000, // end time
-                maxTotalMintableByWallet,
-                feeBps,
-                true
-            )
-        );
+        token.updateCreatorPayoutAddress(Drop, creator);
+        token.updateAllowedFeeRecipient(Drop, feeRecipient, true);
+        // token.updatePublicDrop(
+        //     drop,
+        //     PublicDrop(
+        //         mintPrice,
+        //         uint48(block.timestamp), // start time
+        //         uint48(block.timestamp) + 1000, // end time
+        //         maxTotalMintableByWallet,
+        //         feeBps,
+        //         true
+        //     )
+        // );
 
         // We are ready, let's mint the first 3 tokens!
-        IDrop(seadrop).mintPublic{ value: mintPrice * 3 }(
-            address(token),
-            feeRecipient,
-            address(0),
-            3 // quantity
-        );
+        // IDrop(Drop).mintPublic{ value: mintPrice * 3 }(
+        //     address(token),
+        //     feeRecipient,
+        //     address(0),
+        //     3 // quantity
+        // );
     }
 }

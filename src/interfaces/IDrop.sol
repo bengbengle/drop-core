@@ -4,7 +4,7 @@ pragma solidity ^0.8.17;
 import {
     MintParams,
     SignedMintValidationParams
-} from "../lib/SeaDropStructs.sol";
+} from "../lib/DropStructs.sol";
 
 import { DropErrorsAndEvents } from "../lib/DropErrorsAndEvents.sol";
 
@@ -118,7 +118,7 @@ interface IDrop is DropErrorsAndEvents {
 
     /**
      * The following methods assume msg.sender is an nft contract
-     * and its ERC165 interface id matches INonFungibleSeaDropToken.
+     * and its ERC165 interface id matches INFT.
      */
 
     /**
