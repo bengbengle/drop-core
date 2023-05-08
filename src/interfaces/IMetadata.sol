@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-interface ISeaDropTokenContractMetadata {
+interface IMetadata {
     /**
      * @dev Emit an event when the max token supply is updated.
      */

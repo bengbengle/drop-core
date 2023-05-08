@@ -6,12 +6,12 @@ import { faucet } from "../test/utils/faucet";
 import { VERSION } from "../test/utils/helpers";
 import { whileImpersonating } from "../test/utils/impersonate";
 
-import type { ERC721PartnerSeaDrop, IERC721, ISeaDrop } from "../typechain-types";
+import type { ERC721PartnerSeaDrop, IERC721, IDrop } from "../typechain-types";
 import type { Wallet } from "ethers";
 
 describe(`SeaDrop (v${VERSION})`, function () {
   const { provider } = ethers;
-  let seadrop: ISeaDrop;
+  let seadrop: IDrop;
   let token: ERC721PartnerSeaDrop;
   let standard721Token: IERC721;
   let owner: Wallet;

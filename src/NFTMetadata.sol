@@ -1,21 +1,18 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import { ISeaDropTokenContractMetadata } from "./interfaces/ISeaDropTokenContractMetadata.sol";
+import { IMetadata } from "./interfaces/IMetadata.sol";
 
 import { ERC721A } from "ERC721A/ERC721A.sol";
 
 import { TwoStepOwnable } from "utility-contracts/TwoStepOwnable.sol";
 
 /**
- * @title  ERC721ContractMetadata
- * @notice ERC721ContractMetadata is a token contract that extends ERC721A
+ * @title  NFTMetadata
+ * @notice NFTMetadata is a token contract that extends ERC721A
  *         with additional metadata and ownership capabilities.
  */
-contract ERC721ContractMetadata is
-    ERC721A,
-    TwoStepOwnable,
-    ISeaDropTokenContractMetadata
+contract NFTMetadata is ERC721A, TwoStepOwnable, IMetadata
 {
     /// @notice Throw if the max supply exceeds uint64, a limit
     //          due to the storage of bit-packed variables in ERC721A.

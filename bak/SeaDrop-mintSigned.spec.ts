@@ -7,14 +7,14 @@ import { faucet } from "./utils/faucet";
 import { VERSION } from "./utils/helpers";
 import { whileImpersonating } from "./utils/impersonate";
 
-import type { ERC721PartnerSeaDrop, ISeaDrop } from "../typechain-types";
+import type { ERC721PartnerSeaDrop, IDrop } from "../typechain-types";
 import type { SignedMintValidationParamsStruct } from "../typechain-types/src/ERC721SeaDrop";
 import type { MintParamsStruct } from "../typechain-types/src/SeaDrop";
 import type { Wallet } from "ethers";
 
 describe(`SeaDrop - Mint Signed (v${VERSION})`, function () {
   const { provider } = ethers;
-  let seadrop: ISeaDrop;
+  let seadrop: IDrop;
   let token: ERC721PartnerSeaDrop;
   let owner: Wallet;
   let admin: Wallet;

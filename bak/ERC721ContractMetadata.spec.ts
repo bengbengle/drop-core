@@ -8,7 +8,7 @@ import { VERSION } from "../test/utils/helpers";
 import type { ERC721PartnerSeaDrop } from "../typechain-types";
 import type { Wallet } from "ethers";
 
-describe(`ERC721ContractMetadata (v${VERSION})`, function () {
+describe(`NFTMetadata (v${VERSION})`, function () {
   const { provider } = ethers;
   let token: ERC721PartnerSeaDrop;
   let owner: Wallet;

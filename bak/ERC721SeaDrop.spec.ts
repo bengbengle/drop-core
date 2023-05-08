@@ -5,7 +5,7 @@ import {
   IERC165__factory,
   IERC721__factory,
   INonFungibleSeaDropToken__factory,
-  ISeaDropTokenContractMetadata__factory,
+  IMetadata__factory,
 } from "../typechain-types";
 
 import { getInterfaceID, randomHex } from "./utils/encoding";
@@ -13,13 +13,13 @@ import { faucet } from "./utils/faucet";
 import { VERSION } from "./utils/helpers";
 import { whileImpersonating } from "./utils/impersonate";
 
-import type { ERC721SeaDrop, ISeaDrop } from "../typechain-types";
+import type { ERC721SeaDrop, IDrop } from "../typechain-types";
 import type { PublicDropStruct } from "../typechain-types/src/ERC721PartnerSeaDrop";
 import type { Wallet } from "ethers";
 
 describe(`ERC721SeaDrop (v${VERSION})`, function () {
   const { provider } = ethers;
-  let seadrop: ISeaDrop;
+  let seadrop: IDrop;
   let token: ERC721SeaDrop;
   let owner: Wallet;
   let creator: Wallet;
@@ -245,10 +245,10 @@ describe(`ERC721SeaDrop (v${VERSION})`, function () {
     const supportedInterfacesERC721SeaDrop = [
       [
         INonFungibleSeaDropToken__factory,
-        ISeaDropTokenContractMetadata__factory,
+        IMetadata__factory,
         IERC165__factory,
       ],
-      [ISeaDropTokenContractMetadata__factory],
+      [IMetadata__factory],
     ];
     const supportedInterfacesERC721A = [
       [IERC721__factory, IERC165__factory],

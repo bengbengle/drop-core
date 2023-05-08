@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import { NftDrop } from "./NftDrop.sol";
-import { ISeaDrop } from "./interfaces/ISeaDrop.sol";
+import { NFTDrop } from "./NFTDrop.sol";
+import { IDrop } from "./interfaces/IDrop.sol";
 import { TwoStepAdministered } from "utility-contracts/TwoStepAdministered.sol";
 
 import { AllowListData, PublicDrop, TokenGatedDropStage, SignedMintValidationParams } from "./lib/SeaDropStructs.sol";
@@ -24,7 +24,7 @@ import { AllowListData, PublicDrop, TokenGatedDropStage, SignedMintValidationPar
  *
  *         Note: An Administrator is not required to interface with SeaDrop.
  */
-contract NFT is NftDrop, TwoStepAdministered {
+contract NFT is NFTDrop, TwoStepAdministered {
     /// @notice 为了防止所有者覆盖费用, 管理员必须首先用费用 初始化
     error AdministratorMustInitializeWithFee();
 
@@ -33,7 +33,7 @@ contract NFT is NftDrop, TwoStepAdministered {
      *         administrator, and allowed SeaDrop addresses.
      */
     constructor(string memory name, string memory symbol, address administrator, address[] memory allowedSeaDrop)
-        NftDrop(name, symbol, allowedSeaDrop)
+        NFTDrop(name, symbol, allowedSeaDrop)
         TwoStepAdministered(administrator)
     {}
 
@@ -66,7 +66,7 @@ contract NFT is NftDrop, TwoStepAdministered {
         onlyOwnerOrAdministrator
     {
         // Update the drop URI.
-        ISeaDrop(seaDropImpl).updateDropURI(dropURI);
+        IDrop(seaDropImpl).updateDropURI(dropURI);
     }
 
     /**
@@ -83,7 +83,7 @@ contract NFT is NftDrop, TwoStepAdministered {
         onlyAdministrator 
     {
         // Update the allowed fee recipient.
-        ISeaDrop(seaDropImpl).updateAllowedFeeRecipient(feeRecipient, allowed);
+        IDrop(seaDropImpl).updateAllowedFeeRecipient(feeRecipient, allowed);
     }
 
     /**
@@ -108,7 +108,7 @@ contract NFT is NftDrop, TwoStepAdministered {
         SignedMintValidationParams memory supplied = signedMintValidationParams;
  
         // Update the signed mint validation params.
-        ISeaDrop(seaDropImpl).updateSignedMintValidationParams(signer, supplied);
+        IDrop(seaDropImpl).updateSignedMintValidationParams(signer, supplied);
     }
 
     /**
@@ -130,6 +130,6 @@ contract NFT is NftDrop, TwoStepAdministered {
         onlyOwnerOrAdministrator
     {
         // Update the payers.
-        ISeaDrop(seaDropImpl).updatePayer(payer, allowed);
+        IDrop(seaDropImpl).updatePayer(payer, allowed);
     }
 }

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import { ISeaDrop } from "./interfaces/ISeaDrop.sol";
-import { INonFungibleSeaDropToken } from "./interfaces/INonFungibleSeaDropToken.sol";
-import { ERC721ContractMetadata, ISeaDropTokenContractMetadata } from "./ERC721ContractMetadata.sol";
+import { IDrop } from "./interfaces/IDrop.sol";
+
+import { INFT } from "./interfaces/INFT.sol";
+import { NFTMetadata, IMetadata } from "./NFTMetadata.sol";
 import { AllowListData, PublicDrop, TokenGatedDropStage, SignedMintValidationParams } from "./lib/SeaDropStructs.sol";
 
 import { ERC721A } from "ERC721A/ERC721A.sol";
@@ -11,10 +12,10 @@ import { ReentrancyGuard } from "solmate/utils/ReentrancyGuard.sol";
 import { IERC165 } from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 
 /**
- * @title  ERC721SeaDrop
- * @notice ERC721SeaDrop 是一个 代币合约, 其中包含与 SeaDrop 正确交互的方法
+ * @title  NFTDrop
+ * @notice NFTDrop 是一个 代币合约, 其中包含与 SeaDrop 正确交互的方法
  */
-contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, ReentrancyGuard {
+contract NFTDrop is NFTMetadata, INFT, ReentrancyGuard {
 
     /// @notice 如果 mint 超过最大供应量，则返回错误。
     error MintQuantityExceedsMaxSupply(uint256 total, uint256 maxSupply);
@@ -39,11 +40,9 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
      * @notice Deploy the token contract with its name, symbol,
      *         and allowed SeaDrop addresses.
      */
-    constructor(
-        string memory name,
-        string memory symbol,
-        address[] memory allowedSeaDrop
-    ) ERC721ContractMetadata(name, symbol) {
+    constructor(string memory name, string memory symbol, address[] memory allowedSeaDrop) 
+        NFTMetadata(name, symbol) 
+    {
         // Put the length on the stack for more efficient access.
         uint256 allowedSeaDropLength = allowedSeaDrop.length;
 
@@ -160,61 +159,7 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
         _safeMint(minter, quantity);
     }
 
-    /**
-     * @notice Update the public drop data for this nft contract on SeaDrop.
-     *         Only the owner can use this function.
-     *
-     * @param seaDropImpl The allowed SeaDrop contract.
-     * @param publicDrop  The public drop data.
-     */
-    function updatePublicDrop(
-        address seaDropImpl,
-        PublicDrop calldata publicDrop
-    ) external virtual override onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
-        // Update the public drop data on SeaDrop.
-        ISeaDrop(seaDropImpl).updatePublicDrop(publicDrop);
-    }
-
-    /**
-     * @notice Update the allow list data for this nft contract on SeaDrop.
-     *         Only the owner can use this function.
-     *
-     * @param seaDropImpl   The allowed SeaDrop contract.
-     * @param allowListData The allow list data.
-     */
-    function updateAllowList(
-        address seaDropImpl,
-        AllowListData calldata allowListData
-    ) external virtual override onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
-        // Update the allow list on SeaDrop.
-        ISeaDrop(seaDropImpl).updateAllowList(allowListData);
-    }
-
-    /**
-     * @notice Update the token gated drop stage data for this nft contract
-     *         on SeaDrop.
-     *         Only the owner can use this function.
-     *
-     *         Note: If two INonFungibleSeaDropToken tokens are doing
-     *         simultaneous token gated drop promotions for each other,
-     *         they can be minted by the same actor until
-     *         `maxTokenSupplyForStage` is reached. Please ensure the
-     *         `allowedNftToken` is not running an active drop during the
-     *         `dropStage` time period.
-     *
-     * @param seaDropImpl     The allowed SeaDrop contract.
-     * @param allowedNftToken The allowed nft token.
-     * @param dropStage       The token gated drop stage data.
-     */
-    function updateTokenGatedDrop(
-        address seaDropImpl,
-        address allowedNftToken,
-        TokenGatedDropStage calldata dropStage
-    ) external virtual override onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
-        // Update the token gated drop stage.
-        ISeaDrop(seaDropImpl).updateTokenGatedDrop(allowedNftToken, dropStage);
-    }
-
+  
     /**
      * @notice Update the drop URI for this nft contract on SeaDrop.
      *         Only the owner can use this function.
@@ -230,7 +175,7 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
         onlyAllowedSeaDrop(seaDropImpl)
     {
         // Update the drop URI.
-        ISeaDrop(seaDropImpl).updateDropURI(dropURI);
+        IDrop(seaDropImpl).updateDropURI(dropURI);
     }
 
     /**
@@ -240,12 +185,13 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
      * @param seaDropImpl   The allowed SeaDrop contract.
      * @param payoutAddress The new payout address.
      */
-    function updateCreatorPayoutAddress(
-        address seaDropImpl,
-        address payoutAddress
-    ) external onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
+    function updateCreatorPayoutAddress(address seaDropImpl, address payoutAddress) 
+        external 
+        onlyOwner 
+        onlyAllowedSeaDrop(seaDropImpl) 
+    {
         // Update the creator payout address.
-        ISeaDrop(seaDropImpl).updateCreatorPayoutAddress(payoutAddress);
+        IDrop(seaDropImpl).updateCreatorPayoutAddress(payoutAddress);
     }
 
     /**
@@ -263,7 +209,7 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
         bool allowed
     ) external virtual onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
         // Update the allowed fee recipient.
-        ISeaDrop(seaDropImpl).updateAllowedFeeRecipient(feeRecipient, allowed);
+        IDrop(seaDropImpl).updateAllowedFeeRecipient(feeRecipient, allowed);
     }
 
     /**
@@ -282,7 +228,7 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
         SignedMintValidationParams memory signedMintValidationParams
     ) external virtual override onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
         // Update the signer.
-        ISeaDrop(seaDropImpl).updateSignedMintValidationParams(signer, signedMintValidationParams);
+        IDrop(seaDropImpl).updateSignedMintValidationParams(signer, signedMintValidationParams);
     }
 
     /**
@@ -299,7 +245,7 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
         bool allowed
     ) external virtual override onlyOwner onlyAllowedSeaDrop(seaDropImpl) {
         // Update the signers.
-        ISeaDrop(seaDropImpl).updatePayer(payer, allowed);
+        IDrop(seaDropImpl).updatePayer(payer, allowed);
     }
 
     /**
@@ -341,8 +287,8 @@ contract ERC721SeaDrop is ERC721ContractMetadata, INonFungibleSeaDropToken, Reen
         returns (bool)
     {
         return
-            interfaceId == type(INonFungibleSeaDropToken).interfaceId ||
-            interfaceId == type(ISeaDropTokenContractMetadata).interfaceId ||
+            interfaceId == type(INFT).interfaceId ||
+            interfaceId == type(IMetadata).interfaceId ||
             // ERC721A returns supportsInterface true for
             // ERC165, ERC721, ERC721Metadata
             super.supportsInterface(interfaceId);

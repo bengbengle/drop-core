@@ -8,7 +8,7 @@ import { whileImpersonating } from "./utils/impersonate";
 
 import type {
   ERC721PartnerSeaDrop,
-  ISeaDrop,
+  IDrop,
   TestERC721,
 } from "../typechain-types";
 import type { TokenGatedDropStageStruct } from "../typechain-types/src/SeaDrop";
@@ -16,7 +16,7 @@ import type { Wallet } from "ethers";
 
 describe(`SeaDrop - Mint Allowed Token Holder (v${VERSION})`, function () {
   const { provider } = ethers;
-  let seadrop: ISeaDrop;
+  let seadrop: IDrop;
   let token: ERC721PartnerSeaDrop;
   let allowedNftToken: TestERC721;
   let owner: Wallet;

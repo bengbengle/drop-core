@@ -8,8 +8,8 @@ import { VERSION } from "./utils/helpers";
 import { whileImpersonating } from "./utils/impersonate";
 
 import type { NFT, IDrop } from "../typechain-types";
-import type { SignedMintValidationParamsStruct } from "../typechain-types/src/ERC721SeaDrop";
-import type { MintParamsStruct } from "../typechain-types/src/SeaDrop";
+import type { SignedMintValidationParamsStruct } from "../typechain-types/src/NFTDrop";
+import type { MintParamsStruct } from "../typechain-types/src/Drop";
 import type { Wallet } from "ethers";
 
 describe(`SeaDrop - Mint Signed (v${VERSION})`, function () {

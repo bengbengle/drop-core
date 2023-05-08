@@ -8,7 +8,7 @@ import { randomHex } from "./utils/encoding";
 import { faucet } from "./utils/faucet";
 import { VERSION } from "./utils/helpers";
 
-import type { INonFungibleSeaDropToken, ISeaDrop } from "../typechain-types";
+import type { INonFungibleSeaDropToken, IDrop } from "../typechain-types";
 import type { MintParamsStruct } from "../typechain-types/src/SeaDrop";
 import type { Wallet } from "ethers";
 
@@ -39,7 +39,7 @@ const allowListElementsBuffer = (
 
 describe(`SeaDrop - Mint Allow List (v${VERSION})`, function () {
   const { provider } = ethers;
-  let seadrop: ISeaDrop;
+  let seadrop: IDrop;
   let token: INonFungibleSeaDropToken;
   let creator: Wallet;
   let owner: Wallet;

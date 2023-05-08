@@ -12,7 +12,7 @@ import {
 
 import { SeaDropErrorsAndEvents } from "../lib/SeaDropErrorsAndEvents.sol";
 
-interface ISeaDrop is SeaDropErrorsAndEvents {
+interface IDrop is SeaDropErrorsAndEvents {
     /**
      * @notice Mint a public drop.
      *

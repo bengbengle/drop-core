@@ -5,7 +5,7 @@ import "forge-std/Script.sol";
 
 import { ERC721SeaDrop } from "../src/ERC721SeaDrop.sol";
 
-import { ISeaDrop } from "../src/interfaces/ISeaDrop.sol";
+import { IDrop } from "../src/interfaces/IDrop.sol";
 
 import { PublicDrop } from "../src/lib/SeaDropStructs.sol";
 
@@ -56,7 +56,7 @@ contract DeployAndConfigureExampleToken is Script {
         );
 
         // We are ready, let's mint the first 3 tokens!
-        ISeaDrop(seadrop).mintPublic{ value: mintPrice * 3 }(
+        IDrop(seadrop).mintPublic{ value: mintPrice * 3 }(
             address(token),
             feeRecipient,
             address(0),

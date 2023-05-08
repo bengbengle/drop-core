@@ -1,9 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.17;
 
-import {
-    ISeaDropTokenContractMetadata
-} from "../interfaces/ISeaDropTokenContractMetadata.sol";
+import {IMetadata} from "../interfaces/IMetadata.sol";
 
 import {
     SignedMintValidationParams
@@ -13,7 +11,7 @@ import {
     IERC165
 } from "openzeppelin-contracts/contracts/utils/introspection/IERC165.sol";
 
-interface INFT is ISeaDropTokenContractMetadata, IERC165 {
+interface INFT is IMetadata, IERC165 {
     /**
      * @dev Revert with an error if a contract is not an allowed
      *      SeaDrop address.
